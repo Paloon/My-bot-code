@@ -70,6 +70,5 @@ async def bai(interaction: discord.Interaction, คำที่จะบอก: 
     print(f"{interaction.user.name} ใช้คำสั่ง letter ให้กับ",ส่งให้กับ,"ว่า",คำที่จะบอก,"ใบ้ว่า",คำใบ้)
     await interaction.response.send_message(embed=tec, ephemeral=True)
     
-
-client.run(bot)
 keep_alive()
+client.run(bot)
