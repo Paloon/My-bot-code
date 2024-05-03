@@ -72,7 +72,7 @@ async def bai(interaction: discord.Interaction, คำที่จะบอก: 
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    notification_channel_id = 1235932915368464405 #ใส่ช่องที่จะแจ้งเตือน
+    notification_channel_id = 1156116286733033522 #ใส่ช่องที่จะแจ้งเตือน
 
     if before.channel != after.channel:
         notification_channel = client.get_channel(notification_channel_id)
