@@ -61,7 +61,7 @@ async def bad(interaction: discord.Interaction):
 @client.tree.command(name='letter', description='ส่งข้อความหาใครสักคนและบอกคำใบ้ว่าคนส่งคือใคร')
 @app_commands.describe(ส่งให้กับ="ส่งให้กับใคร", คำที่จะบอก="ชื่อคนที่ต้องการจะบอก", คำใบ้="ใบ้ว่าคนส่งคือใคร")
 async def bai(interaction: discord.Interaction, คำที่จะบอก: str, คำใบ้: str, ส่งให้กับ: discord.User):
-    channel = client.get_channel(1221354536824995961)
+    channel = client.get_channel(1221354536824995961) #ใส่เป็นช่องที่จะส่งจเหมาย
     embe = discord.Embed(title="ข้อความ", description=คำที่จะบอก, colour=discord.Colour.random())
     embe.add_field(name="คำใบ้จากผู้ส่ง", value=คำใบ้)
     embe.set_image(url="https://www.animatedimages.org/data/media/562/animated-line-image-0015.gif")
@@ -69,6 +69,38 @@ async def bai(interaction: discord.Interaction, คำที่จะบอก: 
     await channel.send(f"ฝากถึง {ส่งให้กับ.mention}", embed=embe)
     print(f"{interaction.user.name} ใช้คำสั่ง letter ให้กับ",ส่งให้กับ,"ว่า",คำที่จะบอก,"ใบ้ว่า",คำใบ้)
     await interaction.response.send_message(embed=tec, ephemeral=True)
-    
+
+@client.event
+async def on_voice_state_update(member, before, after):
+    notification_channel_id = 1235932915368464405 #ใส่ช่องที่จะแจ้งเตือน
+
+    if before.channel != after.channel:
+        notification_channel = client.get_channel(notification_channel_id)
+        if before.channel is None and after.channel is not None:
+            profile = member.display_avatar
+            dpn = member.display_name
+            log = discord.Embed(title="Log", timestamp=discord.utils.utcnow(), color=0x21D375, description=f"{member.mention}({dpn}) has joined voice channel {after.channel.name}.")
+            log.set_author(name=f"{member}({dpn})", icon_url=profile)
+            log.add_field(name="Channel", value=f"<#{after.channel.id}> ({after.channel.name})", inline=False)
+            log.add_field(name="ID", value=f"```fix\nUser = {member.id}\nChannel = {after.channel.id}```", inline=False)
+            await notification_channel.send(embed=log)
+        elif before.channel is not None and after.channel is None:
+            profile = member.display_avatar
+            dpn = member.display_name
+            log = discord.Embed(title="Log", timestamp=discord.utils.utcnow(), color=0xFF0000, description=f"{member.mention}({dpn}) has left voice channel {before.channel.name}.")
+            log.set_author(name=f"{member}({dpn})", icon_url=profile)
+            log.add_field(name="Channel", value=f"<#{before.channel.id}> ({before.channel.name})", inline=False)
+            log.add_field(name="ID", value=f"```fix\nUser = {member.id}\nChannel = {before.channel.id}```", inline=False)
+            await notification_channel.send(embed=log)
+        else:
+            profile = member.display_avatar
+            dpn = member.display_name
+            log = discord.Embed(title="Log", timestamp=discord.utils.utcnow(), color=0xFFFF00, description=f"{member.mention}({dpn}) has swiched voice channel {before.channel.name} to {after.channel.name}.")
+            log.set_author(name=f"{member}({dpn})", icon_url=profile)
+            log.add_field(name="Channel", value=f"Form <#{before.channel.id}> ({before.channel.name})\nTo <#{before.channel.id}>({after.channel.name})", inline=False)
+            log.add_field(name="ID", value=f"```fix\nUser = {member.id}\nFrom Channel = {before.channel.id}\nTo Channel = {after.channel.id}```", inline=False)
+            await notification_channel.send(embed=log)
+
+
 keep_alive()
 client.run(bot)
